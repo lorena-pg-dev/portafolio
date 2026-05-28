@@ -367,7 +367,7 @@ section {
   font-size: 0.72rem;
   line-height: 1.8;
   animation: float-card 3.8s ease-in-out infinite;
-  width: 190px;
+  width: 224px;
 }
 
 .code-comment { color: var(--muted); }
@@ -549,6 +549,53 @@ section {
   background: rgba(239, 159, 39, 0.12);
   color: var(--gold);
 }
+
+.tag-mystery {
+  background: rgba(255, 255, 255, 0.04);
+  color: #3d3d4a;
+  letter-spacing: 1px;
+}
+
+/* ── Tarjeta misteriosa ─────────────────────────────────────── */
+.project-mystery {
+  background: #0b0d12;
+  border-color: #1a1d24;
+  opacity: 0.72;
+  transition: border-color .4s, transform .25s, opacity .4s;
+}
+
+.project-mystery:hover {
+  border-color: #3c3489;
+  transform: translateY(-4px);
+  opacity: 1;
+}
+
+.project-icon-mystery {
+  background: #0f1117;
+  border-color: #1e1e2e;
+}
+
+.project-icon-mystery i { color: #3c3489; }
+
+.mystery-title { color: #3d3d55; }
+
+.project-mystery:hover .mystery-title { color: var(--purple-lt); transition: color .4s; }
+
+/* Texto redactado */
+.redacted {
+  background: #1e1e2e;
+  color: transparent;
+  border-radius: 2px;
+  user-select: none;
+  letter-spacing: 2px;
+}
+
+@keyframes mystery-pulse {
+  0%,100% { box-shadow: 0 0 0 0 rgba(60,52,137,0); }
+  50%      { box-shadow: 0 0 0 4px rgba(60,52,137,0.15); }
+}
+
+.project-mystery { animation: mystery-pulse 4s ease-in-out infinite; }
 
 /* ============================================================
    LOGROS
