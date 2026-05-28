@@ -54,7 +54,7 @@ portafolio/
 |---|---|---|
 | Guía de ayuda a personas dependientes | Pre-DAM | [Visit →](https://sites.google.com/educarex.es/guia-ayuda-personas-dependient/inicio) |
 | Web TAMDEM · Jardinería y Pintura | Pre-DAM | [Visit →](https://sites.google.com/view/jardineraypinturahervs/inicio) |
-| Web de inglés para niños | In progress | — |
+| Web de inglés para niños | In progress | [Visit →](https://lorena-pg-dev.github.io/learn-english/) |
 
 ---
 
