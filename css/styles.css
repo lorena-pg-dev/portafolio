@@ -367,7 +367,7 @@ section {
   font-size: 0.72rem;
   line-height: 1.8;
   animation: float-card 3.8s ease-in-out infinite;
-  width: 224px;
+  width: 300px;
 }
 
 .code-comment { color: var(--muted); }
@@ -778,4 +778,555 @@ footer span { color: var(--purple); }
   .hero-visual      { align-self: center; }
   .about-grid       { grid-template-columns: 1fr; }
   .counters-row     { gap: 0.6rem; }
+  .theme-launcher   { bottom: 16px; right: 12px; }
+  .theme-trigger    { font-size: 11px; padding: 8px 12px; }
 }
+
+/* ============================================================
+   CANVAS — LLUVIA MATRIX
+   ============================================================ */
+#matrix-canvas {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity .8s;
+}
+
+[data-theme="matrix"] #matrix-canvas { opacity: 0.18; }
+
+/* ============================================================
+   LANZADOR DE TEMAS
+   ============================================================ */
+.theme-launcher {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 500;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.theme-trigger {
+  /* Colores fijos — no cambia con el tema */
+  background: #0d1117;
+  border: 1px solid #30363d;
+  border-radius: 10px;
+  padding: 10px 16px;
+  cursor: pointer;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: #8b949e;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  transition: border-color .7s ease, color .6s ease;
+  animation: btn-breathe 2.8s ease-in-out infinite;
+}
+
+.theme-trigger:hover  { border-color: #7f77dd; color: #afa9ec; animation: none; opacity: 1; }
+.theme-trigger.open   { border-color: #7f77dd; color: #afa9ec; animation: none; opacity: 1; }
+.trigger-prefix       { color: #7f77dd; font-weight: 500; }
+.trigger-cursor       { color: #7f77dd; animation: blink-cur 1s step-end infinite; }
+
+.theme-panel {
+  background: #0d1117;
+  border: 1px solid #30363d;
+  border-radius: 12px;
+  padding: 10px;
+  display: none;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 200px;
+}
+
+.theme-panel.open { display: flex; }
+
+.timeline-header {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  color: #8b949e;
+  letter-spacing: 1px;
+  padding: 3px 6px 7px;
+  border-bottom: 1px solid #21262d;
+}
+
+.theme-option {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 12px;
+  cursor: pointer;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text2);
+  text-align: left;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: border-color .2s, color .2s, transform .15s, background .4s;
+}
+
+.theme-option:hover  { border-color: var(--purple); color: var(--purple-lt); transform: translateX(-3px); }
+.theme-option:active { transform: scale(0.97); }
+.option-icon { font-size: 14px; flex-shrink: 0; }
+
+/* Colores fijos por línea temporal — no cambian con el tema activo */
+.theme-opt-default {
+  color: #58a6ff;
+  border-color: #1f4060;
+  background: rgba(0, 20, 50, 0.5);
+}
+.theme-opt-default .option-icon { color: #79c0ff; }
+.theme-opt-default:hover { border-color: #58a6ff; color: #79c0ff; }
+
+.theme-opt-matrix  { color: #00cc33; border-color: #004400; background: rgba(0,10,0,.6); }
+.theme-opt-matrix .option-icon { color: #00ff41; }
+.theme-opt-matrix:hover { border-color: #00ff41; color: #00ff41; }
+
+.theme-opt-dungeon { color: #c17f24; border-color: #4a2800; background: rgba(20,10,0,.6); }
+.theme-opt-dungeon .option-icon { color: #f0a830; }
+.theme-opt-dungeon:hover { border-color: #f0a830; color: #f5c842; }
+
+.theme-opt-pacman  { color: #FFD700; border-color: #665500; background: rgba(20,18,0,.6); }
+.theme-opt-pacman .option-icon { color: #FFD700; font-size: 18px; }
+.theme-opt-pacman:hover { border-color: #FFD700; color: #FFEE55; }
+
+/* Sacudida al cambiar de color — más dramática */
+@keyframes btn-shake {
+  0%,100% { transform: translateX(0) scale(1);      }
+  8%      { transform: translateX(-9px) scale(1.06); }
+  20%     { transform: translateX(8px)  scale(1.06); }
+  32%     { transform: translateX(-6px) scale(1.02); }
+  44%     { transform: translateX(5px);              }
+  56%     { transform: translateX(-3px);             }
+  68%     { transform: translateX(2px);              }
+  80%     { transform: translateX(-1px);             }
+}
+
+/* Pulso suave entre cambios */
+@keyframes btn-breathe {
+  0%,100% { opacity: 1;    }
+  50%     { opacity: 0.6;  }
+}
+
+/* Ping sonar — anillo que se expande y desvanece */
+@keyframes ping-out {
+  0%   { transform: scale(1);   opacity: 0.75; }
+  100% { transform: scale(2.2); opacity: 0;    }
+}
+
+.theme-trigger.is-shaking {
+  animation: btn-shake .62s cubic-bezier(.36,.07,.19,.97) !important;
+}
+
+.trigger-ping {
+  position: absolute;
+  inset: 0;
+  border-radius: 10px;
+  border: 1.5px solid var(--ping-color, #7f77dd);
+  pointer-events: none;
+  animation: ping-out .85s ease-out forwards;
+}
+
+/* ============================================================
+   TEMA: MATRIX — HECHICERA
+   ============================================================ */
+[data-theme="matrix"] {
+  --bg:        #000a00;
+  --bg2:       #000500;
+  --surface:   #001a00;
+  --surface2:  #002500;
+  --border:    #004400;
+  --border2:   #002200;
+  --text:      #00ff41;
+  --text2:     #00cc33;
+  --muted:     #007a1f;
+  --purple:    #00ff41;
+  --purple2:   #00cc33;
+  --purple3:   #009922;
+  --purple-lt: #66ff88;
+  --purple-bg: #001500;
+  --green:     #00ff41;
+}
+
+[data-theme="matrix"] .avatar-inner img,
+[data-theme="matrix"] .about-avatar img {
+  filter: hue-rotate(100deg) saturate(2) brightness(0.88);
+}
+
+/* Botones legibles en Matrix */
+[data-theme="matrix"] .btn-primary {
+  background: #003300;
+  color: #00ff41;
+  border: 1px solid #00cc33;
+}
+[data-theme="matrix"] .btn-primary:hover { background: #004400; }
+[data-theme="matrix"] .btn-outline {
+  border-color: #004400;
+  color: #007a1f;
+}
+[data-theme="matrix"] .btn-outline:hover {
+  border-color: #00ff41;
+  color: #00ff41;
+}
+
+[data-theme="matrix"] body::before { opacity: 0.12; }
+
+/* Tarjeta misteriosa en Matrix */
+[data-theme="matrix"] .project-mystery {
+  background: #000a00;
+  border-color: #001a00;
+}
+[data-theme="matrix"] .project-mystery:hover { border-color: #009922; opacity: 1; }
+[data-theme="matrix"] .project-mystery .mystery-title { color: #002800; }
+[data-theme="matrix"] .project-mystery:hover .mystery-title { color: #00ff41; transition: color .4s; }
+[data-theme="matrix"] .project-mystery .project-desc { color: #001a00; }
+[data-theme="matrix"] .project-icon-mystery { background: #000a00; border-color: #002200; }
+[data-theme="matrix"] .project-icon-mystery i { color: #006622; }
+[data-theme="matrix"] .tag-mystery { background: rgba(0,255,65,.03); color: #002800; }
+[data-theme="matrix"] .redacted { background: #002200; }
+
+/* ============================================================
+   TEMA: DUNGEON — BERSERKER
+   ============================================================ */
+[data-theme="dungeon"] {
+  --bg:        #0d0800;
+  --bg2:       #080500;
+  --surface:   #1a0d00;
+  --surface2:  #221200;
+  --border:    #4a2800;
+  --border2:   #2e1800;
+  --text:      #f0a830;
+  --text2:     #d4891a;
+  --muted:     #8b6914;
+  --purple:    #f0a830;
+  --purple2:   #c17f24;
+  --purple3:   #8b5e1a;
+  --purple-lt: #f5c842;
+  --purple-bg: #1a0d00;
+  --green:     #f0a830;
+}
+
+[data-theme="dungeon"] .avatar-inner img,
+[data-theme="dungeon"] .about-avatar img {
+  filter: sepia(0.75) brightness(0.72) contrast(1.15);
+}
+
+[data-theme="dungeon"] body::before {
+  background-image: radial-gradient(circle, #4a2800 1px, transparent 1px);
+  opacity: 0.25;
+}
+
+/* Div fondo mazmorra */
+#dungeon-bg {
+  position: fixed;
+  inset: 0;
+  background-image: url('../assets/mazmorra.webp');
+  background-size: cover;
+  background-position: top left;
+  background-repeat: no-repeat;
+  opacity: 0;
+  z-index: 0;
+  pointer-events: none;
+  transition: opacity .8s ease;
+}
+
+[data-theme="dungeon"] #dungeon-bg { opacity: 0.22; }
+
+/* Canvas brasas visible por encima del fondo */
+[data-theme="dungeon"] #matrix-canvas { opacity: 0.45; }
+
+/* ── Tipografía grimorio — solo donde impacta ───────────────── */
+
+/* Cinzel Decorative ÚNICAMENTE en título hero y sección grande */
+[data-theme="dungeon"] .hero-name,
+[data-theme="dungeon"] .section-title {
+  font-family: 'Cinzel Decorative', Georgia, serif;
+  letter-spacing: 0.5px;
+}
+
+/* Hero name — dorado dramático */
+[data-theme="dungeon"] .hero-name {
+  font-size: clamp(1.7rem, 4vw, 2.5rem);
+  color: #f5c842;
+}
+
+[data-theme="dungeon"] .hero-name span { color: #c17f24; }
+
+/* Section titles — dorado cálido */
+[data-theme="dungeon"] .section-title {
+  color: #f0a830;
+  font-size: 1.5rem;
+}
+
+/* Label de sección — itálica sutil */
+[data-theme="dungeon"] .section-label {
+  font-style: italic;
+  letter-spacing: 3px;
+}
+
+/* Greeting y descripción — Inter con color apagado cálido */
+[data-theme="dungeon"] .hero-greeting { color: #8b6914; font-style: italic; }
+[data-theme="dungeon"] .hero-desc     { line-height: 1.85; }
+
+/* ── Proyecto misterioso en Berserker ───────────────────────── */
+[data-theme="dungeon"] .project-mystery {
+  background: #0d0600;
+  border-color: #2a1500;
+  animation: none;
+  box-shadow: none;
+}
+
+[data-theme="dungeon"] .project-mystery:hover {
+  border-color: #8b5e1a;
+  opacity: 1;
+}
+
+[data-theme="dungeon"] .project-mystery .mystery-title { color: #3d2200; }
+[data-theme="dungeon"] .project-mystery:hover .mystery-title { color: #f5c842; }
+
+[data-theme="dungeon"] .project-icon-mystery {
+  background: #150a00;
+  border-color: #3d2200;
+}
+
+[data-theme="dungeon"] .project-icon-mystery i { color: #6b4010; }
+
+[data-theme="dungeon"] .tag-mystery {
+  background: rgba(255,255,255,0.02);
+  color: #3d2200;
+}
+
+[data-theme="dungeon"] .redacted { background: #2a1500; }
+
+/* Botones legibles en Pacman */
+[data-theme="pacman"] .btn-primary {
+  background: #1a1500;
+  color: #FFD700;
+  border: 1px solid #cc8800;
+}
+[data-theme="pacman"] .btn-primary:hover { background: #252000; }
+[data-theme="pacman"] .btn-outline { border-color: #333300; color: #999900; }
+[data-theme="pacman"] .btn-outline:hover { border-color: #FFD700; color: #FFEE55; }
+
+/* Botones legibles en Berserker */
+[data-theme="dungeon"] .btn-primary {
+  background: #8b5e1a;
+  color: #f5c842;
+  border: 1px solid #c17f24;
+}
+[data-theme="dungeon"] .btn-primary:hover { background: #a06820; }
+[data-theme="dungeon"] .btn-outline {
+  border-color: #4a2800;
+  color: #8b6914;
+}
+[data-theme="dungeon"] .btn-outline:hover {
+  border-color: #f0a830;
+  color: #f5c842;
+}
+
+/* ============================================================
+   STAR WARS CRAWL — intro Berserker
+   ============================================================ */
+.sw-overlay {
+  position: fixed;
+  inset: 0;
+  background: #000;
+  z-index: 9000;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .6s;
+}
+
+.sw-overlay.active {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.sw-skip {
+  position: absolute;
+  top: 20px;
+  right: 24px;
+  background: none;
+  border: 1px solid #4a2800;
+  color: #8b6914;
+  font-family: var(--mono);
+  font-size: 11px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  z-index: 9001;
+  transition: color .2s, border-color .2s;
+}
+.sw-skip:hover { color: #f0a830; border-color: #f0a830; }
+
+.sw-stars {
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(1px 1px at 20% 30%, #fff 0%, transparent 100%),
+    radial-gradient(1px 1px at 60% 70%, #fff 0%, transparent 100%),
+    radial-gradient(1px 1px at 80% 20%, #fff 0%, transparent 100%),
+    radial-gradient(1px 1px at 40% 80%, #fff 0%, transparent 100%),
+    radial-gradient(1px 1px at 10% 60%, #fff 0%, transparent 100%),
+    radial-gradient(1px 1px at 90% 50%, #fff 0%, transparent 100%),
+    radial-gradient(1px 1px at 50% 10%, #fff 0%, transparent 100%);
+  opacity: 0.4;
+}
+
+.sw-perspective {
+  width: 60%;
+  max-width: 640px;
+  padding-bottom: 10vh;
+  perspective: 350px;
+}
+
+.sw-crawl {
+  transform-origin: 50% 100%;
+  transform: rotateX(28deg);
+  animation: sw-scroll 28s linear forwards;
+  text-align: center;
+}
+
+@keyframes sw-scroll {
+  from { margin-top: 110vh; }
+  to   { margin-top: -360%; }
+}
+
+.sw-episode {
+  color: #c17f24;
+  font-size: 0.85rem;
+  letter-spacing: 4px;
+  margin-bottom: 1.2rem;
+  font-family: var(--mono);
+}
+
+.sw-title {
+  color: #f0a830;
+  font-size: 1.6rem;
+  font-weight: 600;
+  line-height: 1.2;
+  margin-bottom: 2.4rem;
+}
+
+.sw-body {
+  color: #d4891a;
+  font-size: 1rem;
+  line-height: 2;
+  margin-bottom: 1.4rem;
+}
+
+/* ============================================================
+   TEMA: PACMAN — CLÁSICA
+   ============================================================ */
+[data-theme="pacman"] {
+  --bg:        #000008;
+  --bg2:       #000010;
+  --surface:   #08081c;
+  --surface2:  #0d0d25;
+  --border:    #1a1a40;
+  --border2:   #101030;
+  --text:      #ffffff;
+  --text2:     #e0e0ff;
+  --muted:     #6060aa;
+  --purple:    #FFD700;
+  --purple2:   #FFA500;
+  --purple3:   #cc8800;
+  --purple-lt: #FFEE55;
+  --purple-bg: #1a1500;
+  --green:     #00FFFF;
+}
+
+/* Canvas Pacman visible */
+[data-theme="pacman"] #matrix-canvas { opacity: 0.5; }
+
+/* Sin dot-grid — el canvas lo sustituye */
+[data-theme="pacman"] body::before { opacity: 0; }
+
+/* Fondo oscuro en secciones y nav para legibilidad */
+[data-theme="pacman"] nav {
+  background: rgba(0, 0, 15, 0.92);
+}
+
+[data-theme="pacman"] section {
+  background: rgba(0, 0, 12, 0.62);
+  border-radius: var(--border-radius-lg);
+}
+
+[data-theme="pacman"] footer {
+  background: rgba(0, 0, 12, 0.7);
+}
+
+/* Fuente arcade solo en título y sección */
+[data-theme="pacman"] .hero-name {
+  font-family: 'Press Start 2P', monospace;
+  font-size: clamp(1.1rem, 3vw, 1.7rem);
+  line-height: 1.5;
+  color: #FFD700;
+  letter-spacing: 1px;
+}
+
+[data-theme="pacman"] .hero-name span { color: #00FFFF; }
+
+[data-theme="pacman"] .section-label {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.55rem;
+  letter-spacing: 3px;
+  color: #FFD700;
+}
+
+[data-theme="pacman"] .section-title { color: #FFD700; }
+
+[data-theme="pacman"] .hero-role { color: #00FFFF; }
+
+[data-theme="pacman"] .tw-cursor { color: #FFD700; }
+
+/* Avatar — anillo amarillo */
+[data-theme="pacman"] .avatar-ring {
+  border-color: #FFD700;
+  animation: pacman-ring-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pacman-ring-pulse {
+  0%,100% { box-shadow: 0 0 0 0 rgba(255,215,0,.4); }
+  50%      { box-shadow: 0 0 0 10px rgba(255,215,0,0); }
+}
+
+[data-theme="pacman"] .avatar-status { background: #FFD700; }
+
+/* Badge */
+[data-theme="pacman"] .badge {
+  border-color: #FFD700;
+  background: #1a1500;
+  color: #FFEE55;
+}
+[data-theme="pacman"] .badge-dot { background: #FFD700; }
+
+/* Skill tags */
+[data-theme="pacman"] .skill-tag:hover {
+  border-color: #FFD700;
+  color: #FFEE55;
+}
+
+/* Proyecto misterioso en Pacman */
+[data-theme="pacman"] .project-mystery {
+  background: #050510;
+  border-color: #101030;
+}
+[data-theme="pacman"] .project-mystery:hover { border-color: #FFD700; opacity: 1; }
+[data-theme="pacman"] .project-mystery .mystery-title { color: #1a1a40; }
+[data-theme="pacman"] .project-mystery:hover .mystery-title { color: #FFD700; transition: color .4s; }
+[data-theme="pacman"] .project-icon-mystery { background: #080820; border-color: #1a1a40; }
+[data-theme="pacman"] .project-icon-mystery i { color: #2a2a60; }
+[data-theme="pacman"] .tag-mystery { background: rgba(255,215,0,.03); color: #1a1a40; }
+[data-theme="pacman"] .redacted { background: #101030; }

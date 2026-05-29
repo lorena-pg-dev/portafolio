@@ -9,7 +9,7 @@
   <!-- Fuentes -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Cinzel+Decorative:wght@400;700&family=IM+Fell+English:ital@0;1&family=Press+Start+2P&display=swap" rel="stylesheet" />
 
   <!-- Iconos -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" />
@@ -17,7 +17,10 @@
   <!-- Estilos -->
   <link rel="stylesheet" href="css/styles.css" />
 </head>
-<body>
+<body data-theme="default">
+
+  <!-- Fondo mazmorra — solo visible en tema Berserker -->
+  <div id="dungeon-bg"></div>
 
   <!-- ══════════════════════════════════════════════════════════
        NAVEGACIÓN
@@ -104,8 +107,8 @@
             <div class="avatar-status"></div>
           </div>
 
-          <div class="code-card">
-            <div class="code-comment">// Lorena.dev</div>
+          <div class="code-card" id="code-card">
+            <div class="code-comment">// Lorena.java</div>
             <div>
               <span class="code-keyword">public class</span>
               <span class="code-str"> developer </span>
@@ -418,6 +421,46 @@
     Hecho con <span>♥</span> por Lorena Palomino · 2026
   </footer>
 
+
+  <!-- Canvas lluvia Matrix / brasas Berserker -->
+  <canvas id="matrix-canvas"></canvas>
+
+  <!-- ══════════════════════════════════════════════════════════
+       LANZADOR DE LÍNEAS TEMPORALES
+  ══════════════════════════════════════════════════════════ -->
+  <div class="theme-launcher" id="theme-launcher">
+
+    <div class="theme-panel" id="theme-panel">
+      <p class="timeline-header">✦ elige tu destino, viajera</p>
+
+      <button class="theme-option theme-opt-default" data-theme="default">
+        <span class="option-icon">◈</span>
+        <span>Original</span>
+      </button>
+
+      <button class="theme-option theme-opt-matrix" data-theme="matrix">
+        <span class="option-icon">⬡</span>
+        <span>Red neuronal</span>
+      </button>
+
+      <button class="theme-option theme-opt-dungeon" data-theme="dungeon">
+        <span class="option-icon">⚔</span>
+        <span>Aventura oscura</span>
+      </button>
+
+      <button class="theme-option theme-opt-pacman" data-theme="pacman">
+        <span class="option-icon">●</span>
+        <span>Clásica</span>
+      </button>
+    </div>
+
+    <button class="theme-trigger" id="theme-trigger" aria-label="Cambiar línea temporal">
+      <span class="trigger-prefix">&gt;</span>
+      <span id="trigger-label">Ajustar línea temporal</span>
+      <span class="trigger-cursor">_</span>
+    </button>
+
+  </div>
 
   <!-- Script -->
   <script src="js/main.js"></script>
