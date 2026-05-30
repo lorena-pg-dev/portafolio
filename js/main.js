@@ -613,6 +613,10 @@ function cycleTriggerAccent() {
   triggerAccentIdx = (triggerAccentIdx + 1) % triggerAccents.length;
   const c = triggerAccents[triggerAccentIdx];
 
+  const currentTheme = document.body.getAttribute('data-theme') || 'default';
+  const isDefault    = currentTheme === 'default';
+  const isMobile     = window.innerWidth <= 680;
+
   /* Cambio de color */
   btn.style.borderColor = c.border;
   btn.style.color       = c.text;
@@ -620,39 +624,50 @@ function cycleTriggerAccent() {
   const cursor = btn.querySelector('.trigger-cursor');
   if (prefix) prefix.style.color = c.border;
   if (cursor) cursor.style.color = c.border;
+  const mobileIcon = btn.querySelector('.trigger-mobile-icon');
+  if (mobileIcon) mobileIcon.style.color = c.text;
 
-  /* Destello de brillo momentáneo */
-  btn.style.boxShadow = `0 0 22px 5px ${c.border}66`;
-  setTimeout(() => { btn.style.boxShadow = ''; }, 900);
+  /* Destello — completo en default, suave en otros */
+  const glowSize    = isDefault ? '22px 5px' : '10px 2px';
+  const glowAlpha   = isDefault ? '66'       : '33';
+  const glowTime    = isDefault ? 900        : 550;
+  btn.style.boxShadow = `0 0 ${glowSize} ${c.border}${glowAlpha}`;
+  setTimeout(() => { btn.style.boxShadow = ''; }, glowTime);
 
-  /* Pings sonar — dos oleadas */
-  const launcher = document.getElementById('theme-launcher');
-  for (let i = 0; i < 2; i++) {
+  /* Pings sonar */
+  const pingCount = (isDefault && !isMobile) ? 2 : 1;
+  const pingAnim  = isMobile ? 'ping-out-mobile' : 'ping-out';
+  const pingBR    = isMobile ? '50%'             : '10px';
+  const launcher  = document.getElementById('theme-launcher');
+
+  for (let i = 0; i < pingCount; i++) {
     setTimeout(() => {
       const ping = document.createElement('div');
-      ping.className = 'trigger-ping';
-      ping.style.setProperty('--ping-color', c.border);
-      /* Posicionar el ping alineado con el botón dentro del launcher */
-      ping.style.cssText += `
-        position:absolute;
-        bottom:0; right:0;
-        width:${btn.offsetWidth}px;
-        height:${btn.offsetHeight}px;
-        border-radius:10px;
-        border:1.5px solid ${c.border};
+      ping.style.cssText = `
+        position:absolute; bottom:0; right:0;
+        width:${btn.offsetWidth}px; height:${btn.offsetHeight}px;
+        border-radius:${pingBR};
+        border:${isMobile ? '1.5px' : '1.5px'} solid ${c.border};
         pointer-events:none;
-        animation:ping-out .85s ease-out forwards;
+        animation:${pingAnim} .85s ease-out forwards;
+        opacity:${isDefault ? '1' : '0.55'};
       `;
       launcher.appendChild(ping);
       setTimeout(() => ping.remove(), 900);
     }, i * 200);
   }
 
-  /* Sacudida */
-  btn.classList.remove('is-shaking');
+  /* Sacudida — fuerte en default, suave en otros; mínima en móvil */
+  btn.classList.remove('is-shaking', 'is-shaking-soft');
   void btn.offsetWidth;
-  btn.classList.add('is-shaking');
-  setTimeout(() => btn.classList.remove('is-shaking'), 700);
+  if (isMobile) {
+    btn.classList.add('is-shaking-soft');
+  } else {
+    btn.classList.add(isDefault ? 'is-shaking' : 'is-shaking-soft');
+  }
+  setTimeout(() => {
+    btn.classList.remove('is-shaking', 'is-shaking-soft');
+  }, 700);
 }
 
 setInterval(cycleTriggerAccent, 2800);

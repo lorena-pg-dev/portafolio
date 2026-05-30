@@ -778,8 +778,27 @@ footer span { color: var(--purple); }
   .hero-visual      { align-self: center; }
   .about-grid       { grid-template-columns: 1fr; }
   .counters-row     { gap: 0.6rem; }
-  .theme-launcher   { bottom: 16px; right: 12px; }
-  .theme-trigger    { font-size: 11px; padding: 8px 12px; }
+
+  /* Lanzador móvil — círculo portal sin texto */
+  .theme-launcher   { bottom: 20px; right: 16px; }
+
+  .theme-trigger {
+    width: 52px;
+    height: 52px;
+    border-radius: 50% !important;
+    padding: 0;
+    justify-content: center;
+    border-width: 2px;
+  }
+
+  .trigger-desktop      { display: none; }
+  .trigger-mobile-icon  { display: block; }
+
+  /* Panel más estrecho en móvil */
+  .theme-panel { min-width: 180px; }
+
+  /* Fondo mazmorra centrado en móvil */
+  #dungeon-bg { background-position: center center; }
 }
 
 /* ============================================================
@@ -896,6 +915,29 @@ footer span { color: var(--purple); }
 .theme-opt-pacman  { color: #FFD700; border-color: #665500; background: rgba(20,18,0,.6); }
 .theme-opt-pacman .option-icon { color: #FFD700; font-size: 18px; }
 .theme-opt-pacman:hover { border-color: #FFD700; color: #FFEE55; }
+
+/* Icono móvil del lanzador — oculto en escritorio */
+.trigger-mobile-icon { display: none; font-size: 22px; line-height: 1; }
+.trigger-desktop      { display: flex; align-items: center; gap: 6px; }
+
+/* Shake suave para temas alternativos */
+@keyframes btn-shake-soft {
+  0%,100% { transform: translateX(0); }
+  20%     { transform: translateX(-4px); }
+  45%     { transform: translateX(3px); }
+  65%     { transform: translateX(-2px); }
+  85%     { transform: translateX(1px); }
+}
+
+.theme-trigger.is-shaking-soft {
+  animation: btn-shake-soft .42s ease !important;
+}
+
+/* Ping pequeño para móvil */
+@keyframes ping-out-mobile {
+  0%   { transform: scale(1);   opacity: 0.6; }
+  100% { transform: scale(1.5); opacity: 0;   }
+}
 
 /* Sacudida al cambiar de color — más dramática */
 @keyframes btn-shake {
@@ -1031,6 +1073,7 @@ footer span { color: var(--purple); }
   background-size: cover;
   background-position: top left;
   background-repeat: no-repeat;
+  background-color: #0d0800;   /* relleno para áreas no cubiertas — evita sangrado */
   opacity: 0;
   z-index: 0;
   pointer-events: none;
